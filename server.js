@@ -22,6 +22,76 @@ app.post('/api/lookup-phone', async (req, res) => {
   try {
     const { phoneNumber } = req.body;
     
+    // Call Numverify API
+    app.post('/api/lookup-phone', async (req, res) => {
+  try {
+    const { phoneNumber } = req.body;
+    
+    // Call Numverify API for REAL data
+    const numverifyResponse = await axios.get(
+      `http://apilayer.net/api/validate?access_key=${process.env.NUMVERIFY_API_KEY}&number=${phoneNumber}`
+    );
+    
+    const data = numverifyResponse.data;
+    
+    // Return REAL data from API
+    const result = {
+      number: phoneNumber,
+      valid: data.valid,
+      carrier: data.carrier || 'Unknown',
+      country: data.country_name || 'Unknown',
+      countryCode: data.country_code || '',
+      lineType: data.line_type || 'Unknown',
+      location: data.location || 'Unknown',
+      
+      // Still demo for social media (we'll add real APIs later)
+      socialMedia: [
+        { platform: 'WhatsApp', found: true },
+        { platform: 'Facebook', found: true }
+      ],
+      riskScore: 35
+    };
+    
+    res.json(result);
+    
+  } catch (error) {
+    console.error('Error:', error.message);
+    res.status(500).json({ 
+      error: 'Lookup failed',
+      message: error.message 
+    });
+  }
+});
+    
+    // Call Numverify API
+    const numverifyResponse = await axios.get(
+      `http://apilayer.net/api/validate?access_key=${process.env.bca058dbe69aa71e5d35e4a66fcb98fe}&number=${phoneNumber}`
+    );
+    
+    const result = {
+      number: phoneNumber,
+      valid: numverifyResponse.data.valid,
+      carrier: numverifyResponse.data.carrier || 'Unknown',
+      country: numverifyResponse.data.country_name || 'Unknown',
+      countryCode: numverifyResponse.data.country_code || '',
+      lineType: numverifyResponse.data.line_type || 'Unknown',
+      
+      // Still using demo data for these (you'll add more APIs later)
+      socialMedia: [
+        { platform: 'WhatsApp', found: true },
+        { platform: 'Facebook', found: false }
+      ],
+      riskScore: 35
+    };
+    
+    res.json(result);
+    
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Lookup failed' });
+  }
+});
+    
     // For now, we'll return demo data
     // Later, we'll call real APIs here
     const demoData = {
