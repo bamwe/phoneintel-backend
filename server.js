@@ -6,7 +6,7 @@ require('dotenv').config();
 
 // Create our server
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Middleware - allows our server to understand JSON data
 app.use(cors());
@@ -19,11 +19,6 @@ app.get('/', (req, res) => {
 
 // Phone lookup endpoint - this is what your frontend will call
 app.post('/api/lookup-phone', async (req, res) => {
-  try {
-    const { phoneNumber } = req.body;
-    
-    // Call Numverify API
-    app.post('/api/lookup-phone', async (req, res) => {
   try {
     const { phoneNumber } = req.body;
     
@@ -62,56 +57,6 @@ app.post('/api/lookup-phone', async (req, res) => {
     });
   }
 });
-    
-    // Call Numverify API
-    const numverifyResponse = await axios.get(
-      `http://apilayer.net/api/validate?access_key=${process.env.bca058dbe69aa71e5d35e4a66fcb98fe}&number=${phoneNumber}`
-    );
-    
-    const result = {
-      number: phoneNumber,
-      valid: numverifyResponse.data.valid,
-      carrier: numverifyResponse.data.carrier || 'Unknown',
-      country: numverifyResponse.data.country_name || 'Unknown',
-      countryCode: numverifyResponse.data.country_code || '',
-      lineType: numverifyResponse.data.line_type || 'Unknown',
-      
-      // Still using demo data for these (you'll add more APIs later)
-      socialMedia: [
-        { platform: 'WhatsApp', found: true },
-        { platform: 'Facebook', found: false }
-      ],
-      riskScore: 35
-    };
-    
-    res.json(result);
-    
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'Lookup failed' });
-  }
-});
-    
-    // For now, we'll return demo data
-    // Later, we'll call real APIs here
-    const demoData = {
-      number: phoneNumber,
-      carrier: 'MTN Uganda',
-      country: 'Uganda',
-      valid: true,
-      socialMedia: [
-        { platform: 'WhatsApp', found: true },
-        { platform: 'Facebook', found: true }
-      ],
-      riskScore: 35
-    };
-    
-    res.json(demoData);
-    
-  } catch (error) {
-    res.status(500).json({ error: 'Something went wrong' });
-  }
-});
 
 // Email lookup endpoint
 app.post('/api/lookup-email', async (req, res) => {
@@ -124,7 +69,11 @@ app.post('/api/lookup-email', async (req, res) => {
       valid: true,
       provider: 'Gmail',
       breaches: 2,
-      riskScore: 28
+      riskScore: 28,
+      socialMedia: [
+        { platform: 'GitHub', found: true },
+        { platform: 'LinkedIn', found: true }
+      ]
     };
     
     res.json(demoData);
@@ -136,6 +85,6 @@ app.post('/api/lookup-email', async (req, res) => {
 
 // Start the server
 app.listen(PORT, () => {
-  console.log(`✅ Server is running on http://localhost:${PORT}`);
+  console.log(`✅ Server is running on port ${PORT}`);
   console.log(`✅ Test it by visiting: http://localhost:${PORT}`);
 });
