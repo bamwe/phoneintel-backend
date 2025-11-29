@@ -8,14 +8,12 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware - allows our server to understand JSON data
+// Middleware - IMPORTANT: Only declare once
 app.use(cors({
-  origin: '*', // Allow all origins for now
+  origin: '*',
   methods: ['GET', 'POST'],
   credentials: true
 }));
-app.use(express.json());
-app.use(cors());
 app.use(express.json());
 
 // Test route - to check if server is working
@@ -23,10 +21,12 @@ app.get('/', (req, res) => {
   res.json({ message: 'PhoneIntel API is running!' });
 });
 
-// Phone lookup endpoint - this is what your frontend will call
+// Phone lookup endpoint
 app.post('/api/lookup-phone', async (req, res) => {
   try {
     const { phoneNumber } = req.body;
+    
+    console.log('📞 Phone lookup request:', phoneNumber);
     
     // Call Numverify API for REAL data
     const numverifyResponse = await axios.get(
@@ -34,6 +34,8 @@ app.post('/api/lookup-phone', async (req, res) => {
     );
     
     const data = numverifyResponse.data;
+    
+    console.log('✅ Numverify response:', data);
     
     // Return REAL data from API
     const result = {
@@ -56,7 +58,7 @@ app.post('/api/lookup-phone', async (req, res) => {
     res.json(result);
     
   } catch (error) {
-    console.error('Error:', error.message);
+    console.error('❌ Error in phone lookup:', error.message);
     res.status(500).json({ 
       error: 'Lookup failed',
       message: error.message 
@@ -68,6 +70,8 @@ app.post('/api/lookup-phone', async (req, res) => {
 app.post('/api/lookup-email', async (req, res) => {
   try {
     const { email } = req.body;
+    
+    console.log('📧 Email lookup request:', email);
     
     // Demo data for now
     const demoData = {
@@ -85,6 +89,7 @@ app.post('/api/lookup-email', async (req, res) => {
     res.json(demoData);
     
   } catch (error) {
+    console.error('❌ Error in email lookup:', error);
     res.status(500).json({ error: 'Something went wrong' });
   }
 });
@@ -92,5 +97,6 @@ app.post('/api/lookup-email', async (req, res) => {
 // Start the server
 app.listen(PORT, () => {
   console.log(`✅ Server is running on port ${PORT}`);
-  console.log(`✅ Test it by visiting: http://localhost:${PORT}`);
+  console.log(`✅ Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`✅ NUMVERIFY_API_KEY is ${process.env.NUMVERIFY_API_KEY ? 'SET' : 'NOT SET'}`);
 });
