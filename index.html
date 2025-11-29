@@ -265,7 +265,7 @@
                 const endpoint = currentTab === 'phone' ? '/api/lookup-phone' : '/api/lookup-email';
                 const bodyKey = currentTab === 'phone' ? 'phoneNumber' : 'email';
                 
-                const response = await fetch(`https://phoneintel-backend-production.up.railway.app/${endpoint}`, {
+                const response = await fetch(`https://phoneintel-backend-production-d296.up.railway.app/${endpoint}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
